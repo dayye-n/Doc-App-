@@ -1,17 +1,6 @@
 import axios, { AxiosError } from "axios";
+import api from "../api/client";
 import type { CheckNoteResponse, ParsedNoteResponse, PatientInstructionsResponse } from "../types";
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 // Error handler utility
 export const handleApiError = (error: unknown): string => {
