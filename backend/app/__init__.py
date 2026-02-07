@@ -1,2 +1,2 @@
-"""ENT Note Builder backend package."""
+"""Dr.Tools backend package."""
 

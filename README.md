@@ -1,4 +1,4 @@
-# ENT Note Builder
+# Dr.Tools
 
 Fast, click-first ENT clinical note builder with anatomy-driven procedure templates, built with React (Vite + TypeScript + Tailwind) and FastAPI + PostgreSQL.
 
@@ -57,8 +57,13 @@ npm run dev                        # http://localhost:5173
 ## Features implemented
 - Email/password auth (JWT stored in `localStorage`)
 - Patient create/list/search
-- Clickable SVG anatomy (nose, left/right ear, throat, neck)
+- Interactive 3D anatomy model (nose, left/right ear, throat, neck) with hover/click highlighting
 - Procedure templates seeded on startup (nose, ear, throat, neck)
 - Note builder with encounter date, therapy checklist, follow-up
 - Final note editable textbox, copy-to-clipboard, and backend PDF export
+- **AI Features:**
+  - **AI Assistant**: Parse dictation/transcript text into structured note fields
+  - **AI Check Note**: Validate note quality, detect contradictions and missing information
+  - **Patient Instructions Generator**: Generate patient-friendly discharge instructions with red flags
 - REST API: `/auth/register`, `/auth/login`, `/auth/me`, `/patients`, `/templates`, `/notes`, `/notes/{id}`, `/notes/{id}/pdf`
+- AI API: `/ai/parse-note`, `/ai/check-note`, `/ai/patient-instructions`

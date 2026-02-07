@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import AIAssistant from "../components/AIAssistant";
+import AICheckNote from "../components/AICheckNote";
+import PatientInstructions from "../components/PatientInstructions";
 import ProcedurePanel from "../components/ProcedurePanel";
 import ThreeDHead from "../components/ThreeDHead";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/api";
-import type { Note, Patient, ProcedureTemplate, TherapyOption } from "../types";
+import type { Note, Patient, ParsedNoteResponse, ProcedureTemplate, TherapyOption } from "../types";
 
 const therapyOptions: TherapyOption[] = ["dressing change", "follow-up in X days", "antibiotics", "pain management"];
 
@@ -103,6 +106,57 @@ const Dashboard = () => {
     setSelectedFields((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleNoteParsed = (parsed: ParsedNoteResponse) => {
+    // Auto-fill form fields from parsed note
+    // Try to find a matching template based on procedure name
+    const matchingTemplate = templates.find(
+      (t) => t.name.toLowerCase().includes(parsed.procedure.toLowerCase()) || parsed.procedure.toLowerCase().includes(t.name.toLowerCase())
+    );
+
+    if (matchingTemplate) {
+      setSelectedTemplate(matchingTemplate);
+      // Map parsed data to form fields
+      const mappedFields: Record<string, any> = {};
+      matchingTemplate.fields.forEach((field) => {
+        const fieldNameLower = field.name.toLowerCase();
+        if (fieldNameLower.includes("diagnosis") && parsed.diagnosis) {
+          mappedFields[field.name] = parsed.diagnosis;
+        } else if (fieldNameLower.includes("finding") && parsed.findings.length > 0) {
+          mappedFields[field.name] = parsed.findings.join(", ");
+        } else if (fieldNameLower.includes("symptom") && parsed.symptoms.length > 0) {
+          mappedFields[field.name] = parsed.symptoms.join(", ");
+        } else if (fieldNameLower.includes("side") && parsed.side !== "na") {
+          mappedFields[field.name] = parsed.side;
+        } else if (fieldNameLower.includes("packing") && parsed.packing) {
+          mappedFields[field.name] = parsed.packing;
+        }
+      });
+      setSelectedFields(mappedFields);
+    }
+
+    // Set therapy based on medications
+    const therapyFromMeds: TherapyOption[] = [];
+    parsed.medications.forEach((med) => {
+      if (med.toLowerCase().includes("antibiotic")) {
+        therapyFromMeds.push("antibiotics");
+      }
+      if (med.toLowerCase().includes("pain")) {
+        therapyFromMeds.push("pain management");
+      }
+    });
+    if (therapyFromMeds.length > 0) {
+      setTherapy(therapyFromMeds);
+    }
+
+    // Set follow-up
+    if (parsed.follow_up) {
+      setFollowUp(parsed.follow_up);
+    }
+
+    setStatus("Note parsed and form auto-filled!");
+    setTimeout(() => setStatus(null), 3000);
+  };
+
   const generateNote = async () => {
     if (!selectedPatient || !selectedTemplate) {
       setStatus("Select a patient, region, and procedure first.");
@@ -176,7 +230,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-surface">
       <header className="flex items-center justify-between border-b border-slate-200 bg-white/90 px-6 py-4 backdrop-blur">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">ENT Note Builder</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Dr.Tools</div>
           <h1 className="text-xl font-bold text-slate-900">Generate structured notes in clicks</h1>
         </div>
         <div className="flex items-center gap-4">
@@ -280,6 +334,7 @@ const Dashboard = () => {
           </section>
 
           <section className="lg:col-span-2 space-y-5">
+            <AIAssistant onNoteParsed={handleNoteParsed} />
             <ThreeDHead selectedRegion={selectedRegion as any} onSelect={(r) => setSelectedRegion(r)} />
             <ProcedurePanel
               templates={templates}
@@ -432,6 +487,27 @@ const Dashboard = () => {
                 </button>
                 {noteId && <span className="text-xs text-slate-500">Note ID: {noteId}</span>}
               </div>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <AICheckNote
+                noteData={{
+                  selectedFields,
+                  therapy,
+                  followUp,
+                  selectedTemplate,
+                  side: selectedFields["side"] as string | undefined,
+                }}
+              />
+              <PatientInstructions
+                noteData={{
+                  selectedFields,
+                  therapy,
+                  followUp,
+                  selectedTemplate,
+                  side: selectedFields["side"] as string | undefined,
+                }}
+              />
             </div>
           </section>
         </div>

@@ -1,6 +1,6 @@
-# ENT Note Builder - Frontend
+# Dr.Tools - Frontend
 
-React + TypeScript + Vite + Tailwind UI for the ENT Note Builder. Use the root-level README for end-to-end setup.
+React + TypeScript + Vite + Tailwind UI for Dr.Tools. Use the root-level README for end-to-end setup.
 
 ## Quick start
 ```bash

@@ -47,3 +47,27 @@ export interface AuthUser {
   created_at: string;
 }
 
+// AI Feature Types
+export interface ParsedNoteResponse {
+  procedure: string;
+  side: string; // "left" | "right" | "bilateral" | "na"
+  symptoms: string[];
+  findings: string[];
+  diagnosis: string;
+  medications: string[];
+  packing: string;
+  follow_up: string;
+  instructions: string;
+  red_flags: string[];
+}
+
+export interface CheckNoteResponse {
+  warnings: string[];
+  score: number; // 0-100
+}
+
+export interface PatientInstructionsResponse {
+  discharge_text: string;
+  red_flags: string[];
+  follow_up: string;
+}
