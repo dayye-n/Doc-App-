@@ -10,9 +10,12 @@ settings = get_settings()
 
 app = FastAPI(title="Dr.Tools API")
 
+# CORS configuration: Allow specific origins from env + Vercel preview domains
+# Ensure CORSMiddleware is added BEFORE routers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
+    allow_origin_regex=r"^https://.*\.vercel\.app$",  # Allow all Vercel preview domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

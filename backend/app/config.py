@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     jwt_secret: str = "changeme"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 8
-    cors_origins: str = "http://localhost:5173,http://localhost:5174"
+    cors_origins: str = "http://localhost:5173,http://localhost:5174,https://doc-app-blond.vercel.app"
     default_admin_email: str = "admin@example.com"
     default_admin_password: str = "ChangeMe123!"
 
